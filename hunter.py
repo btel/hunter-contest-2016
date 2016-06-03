@@ -24,11 +24,13 @@ ARCH = platform.machine()
 
 def plot_contour(x_range, y_range, n_contours=15):
     xx, yy = field.calc_grid(x_range, y_range, n_samp=Nsamp)
-    vext_p2p = field.estimate_on_grid(coords, I_p2p, xx, yy)
-    graph.logcontour(xx, yy, vext_p2p[0, :], n_contours=n_contours, linecolors='0.8', linewidths=0.2, unit='nV')
+    vext = field.estimate_on_grid(coords, I, xx, yy)
+    vext_p2p = vext.max(0) - vext.min(0)
+    graph.logcontour(xx, yy, vext_p2p, n_contours=n_contours, linecolors='0.8', linewidths=0.2, unit='nV')
 
 dt = 0.025
 tstop = 50
+t0, t1 = 10, 25
 
 # Parameters
 rho    = 3.5  #conductivity, Ohm.m
@@ -50,18 +52,14 @@ if not os.path.exists(simulation_filename):
     cell.initialize(dt=dt)
     t, I = cell.integrate(tstop)
     coords = cell.get_seg_coords()
-    I_p2p = I.max(0) - I.min(0)
-    I_p2p = I_p2p[None, :]
-    np.savez(simulation_filename, coords=coords, I_p2p=I_p2p, t=t)
+    I = I[(t > t0) & (t < t1)]
+    t = t[(t > t0) & (t < t1)]
+    np.savez(simulation_filename, coords=coords, I=I, t=t)
 else:
     data = np.load(simulation_filename)
     coords = data['coords']
     t = data['t']
-    I_p2p = data['I_p2p']
-
-xx, yy = field.calc_grid(x_range, y_range, n_samp=Nsamp)
-v_ext = field.estimate_on_grid(coords, I_p2p, xx, yy)
-
+    I = data['I']
 
 # Plots
 fig = plt.figure(figsize=(6,6), facecolor=bg_color)
@@ -71,18 +69,15 @@ ax = plt.subplot(111, frameon=False)
 #contour
 plot_contour(x_range, y_range, 5)
 
-
 #neuron
 S = np.pi*coords['diam']*coords['L'] #segment surface
-p2p = I_p2p[0, :]
+p2p = I.max(0) - I.min(0)
 norm = colors.LogNorm(vmin=p2p.min(), vmax=p2p.max())
 col = graph.plot_neuron(coords, p2p, norm=norm, show_diams=True, width_min=1., width_max=6)
 plt.xticks([])
 plt.yticks([])
 plt.xlim(x_range)
 plt.ylim(y_range)
-
-
 
 # scalebar
 xp, yp = -500, -100
@@ -101,7 +96,6 @@ fmt.create_dummy_axis()
 cbar = plt.colorbar(col,format=fmt, cax=ax_cbar)
 cbar.ax.set_ylabel("current intensity\n($\mathrm{\\mu A/cm^2}$)", ma='center')
 cbar.outline.set_visible(False)
-
 
 # zoom soma area
 ax_zoom1 = plt.axes([0.15, 0.5, 0.2, 0.2], axisbg=bg_color)
