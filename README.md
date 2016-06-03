@@ -10,6 +10,7 @@ License: Creative Commons [CC BY 4.0](https://creativecommons.org/licenses/by/4.
 
 Dependencies:
 
+* Python 2.7
 * [NeuronEAP](https://github.com/btel/neuroneap)
 * [Neuron](http://neuron.yale.edu/neuron/) Simulator
 * matplotlib
