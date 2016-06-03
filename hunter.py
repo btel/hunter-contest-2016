@@ -40,7 +40,7 @@ y_range = (-200, 610)
 x_range = (-550, 250)
 bg_color = (0.7, 0.7, 0.7)
 
-simulation_filename = "neuron_simulation_data.npz"
+simulation_filename = "data/neuron_simulation_data.npz"
 
 # Simulation
 if not os.path.exists(simulation_filename):
