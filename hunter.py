@@ -16,14 +16,19 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import colors, ticker, patches
 
-from eap import field, cell, graph
+from eap import field, graph
 import os
 
 import platform
 ARCH = platform.machine()
 
+def plot_contour(x_range, y_range, n_contours=15):
+    xx, yy = field.calc_grid(x_range, y_range, n_samp=Nsamp)
+    vext_p2p = field.estimate_on_grid(coords, I_p2p, xx, yy)
+    graph.logcontour(xx, yy, vext_p2p[0, :], n_contours=n_contours, linecolors='0.8', linewidths=0.2, unit='nV')
+
 dt = 0.025
-tstop = 5
+tstop = 50
 
 # Parameters
 rho    = 3.5  #conductivity, Ohm.m
@@ -39,20 +44,23 @@ simulation_filename = "neuron_simulation_data.npz"
 
 # Simulation
 if not os.path.exists(simulation_filename):
+    from eap import cell
     cell.load_model('models/Mainen/demo_ext.hoc',
                     'models/Mainen/{}/.libs/libnrnmech.so'.format(ARCH))
     cell.initialize(dt=dt)
     t, I = cell.integrate(tstop)
     coords = cell.get_seg_coords()
-    np.savez(simulation_filename, coords=coords, I=I, t=t)
+    I_p2p = I.max(0) - I.min(0)
+    I_p2p = I_p2p[None, :]
+    np.savez(simulation_filename, coords=coords, I_p2p=I_p2p, t=t)
 else:
     data = np.load(simulation_filename)
     coords = data['coords']
     t = data['t']
-    I = data['I']
+    I_p2p = data['I_p2p']
 
 xx, yy = field.calc_grid(x_range, y_range, n_samp=Nsamp)
-v_ext = field.estimate_on_grid(coords, I, xx, yy)
+v_ext = field.estimate_on_grid(coords, I_p2p, xx, yy)
 
 
 # Plots
@@ -61,13 +69,12 @@ fig.subplots_adjust(left=0.05, right=0.95)
 ax = plt.subplot(111, frameon=False)
 
 #contour
-vext_p2p = v_ext.max(0) - v_ext.min(0)
-graph.logcontour(xx, yy, vext_p2p, n_contours=15, linecolors='0.8', linewidths=0.2, unit='nV')
+plot_contour(x_range, y_range, 5)
 
 
 #neuron
 S = np.pi*coords['diam']*coords['L'] #segment surface
-p2p = np.abs(I).max(0)-np.abs(I).min(0)
+p2p = I_p2p[0, :]
 norm = colors.LogNorm(vmin=p2p.min(), vmax=p2p.max())
 col = graph.plot_neuron(coords, p2p, norm=norm, show_diams=True, width_min=1., width_max=6)
 plt.xticks([])
@@ -95,12 +102,6 @@ cbar = plt.colorbar(col,format=fmt, cax=ax_cbar)
 cbar.ax.set_ylabel("current intensity\n($\mathrm{\\mu A/cm^2}$)", ma='center')
 cbar.outline.set_visible(False)
 
-def plot_contour(x_range, y_range, n_contours=15):
-    xx, yy = field.calc_grid(x_range, y_range, n_samp=Nsamp)
-    I_p2p = I.max(0) - I.min(0)
-    I_p2p = I_p2p[None, :]
-    vext_p2p = field.estimate_on_grid(coords, I_p2p, xx, yy)
-    graph.logcontour(xx, yy, vext_p2p[0, :], n_contours=n_contours, linecolors='0.8', linewidths=0.2, unit='nV')
 
 # zoom soma area
 ax_zoom1 = plt.axes([0.15, 0.5, 0.2, 0.2], axisbg=bg_color)
