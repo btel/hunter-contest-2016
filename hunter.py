@@ -27,7 +27,7 @@ def plot_contour(x_range, y_range, n_contours=15):
     xx, yy = field.calc_grid(x_range, y_range, n_samp=Nsamp)
     vext = field.estimate_on_grid(coords, I, xx, yy)
     vext_p2p = vext.max(0) - vext.min(0)
-    graph.logcontour(xx, yy, vext_p2p, n_contours=n_contours, linecolors='0.8', linewidths=0.2, unit='nV')
+    graph.logcontour(xx, yy, vext_p2p, n_contours=n_contours, linecolors='0.8', linewidths=1, unit='nV')
 
 dt = 0.025
 tstop = 50
@@ -104,16 +104,16 @@ plt.text(-50, -120, "dendrites", transform=ax.transData,
          size=8, color='0.9', style='italic')
 plt.text(-390, 530, "dendrites", transform=ax.transData,
          size=8, color='0.9', style='italic')
-plt.text(-140, -200, "axon", transform=ax.transData,
+plt.text(-160, -220, "axon", transform=ax.transData,
          size=8, color='0.9', style='italic')
 
 # zoom soma area
 ax_zoom1 = plt.axes([0.15, 0.5, 0.2, 0.2], axisbg=bg_color)
-graph.plot_neuron(coords, p2p, norm=norm, show_diams=True, width_min=1.5, cmap=cmap)
-plt.axis('scaled')
 x1, x2 = (-180, -130)
 y1, y2 = (-50, 0)
 plot_contour((x1, x2), (y1, y2), 5)
+graph.plot_neuron(coords, p2p, norm=norm, show_diams=True, width_min=1.5, cmap=cmap)
+plt.axis('scaled')
 plt.xlim((x1, x2))
 plt.ylim((y1, y2))
 plt.xticks([])
