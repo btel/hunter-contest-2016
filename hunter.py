@@ -15,6 +15,7 @@ Ranvier) """
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import colors, ticker, patches
+from matplotlib import cm
 
 from eap import field, graph
 import os
@@ -41,6 +42,7 @@ filter = None
 y_range = (-200, 610)
 x_range = (-550, 250)
 bg_color = (0.7, 0.7, 0.7)
+cmap = cm.viridis
 
 simulation_filename = "data/neuron_simulation_data.npz"
 
@@ -73,7 +75,7 @@ plot_contour(x_range, y_range, 5)
 S = np.pi*coords['diam']*coords['L'] #segment surface
 p2p = I.max(0) - I.min(0)
 norm = colors.LogNorm(vmin=p2p.min(), vmax=p2p.max())
-col = graph.plot_neuron(coords, p2p, norm=norm, show_diams=True, width_min=1., width_max=6)
+col = graph.plot_neuron(coords, p2p, norm=norm, show_diams=True, width_min=1., width_max=6, cmap=cmap)
 plt.xticks([])
 plt.yticks([])
 plt.xlim(x_range)
@@ -97,9 +99,17 @@ cbar = plt.colorbar(col,format=fmt, cax=ax_cbar)
 cbar.ax.set_ylabel("current intensity\n($\mathrm{\\mu A/cm^2}$)", ma='center')
 cbar.outline.set_visible(False)
 
+# labels
+plt.text(-50, -120, "dendrites", transform=ax.transData,
+         size=8, color='0.9', style='italic')
+plt.text(-390, 530, "dendrites", transform=ax.transData,
+         size=8, color='0.9', style='italic')
+plt.text(-140, -200, "axon", transform=ax.transData,
+         size=8, color='0.9', style='italic')
+
 # zoom soma area
 ax_zoom1 = plt.axes([0.15, 0.5, 0.2, 0.2], axisbg=bg_color)
-graph.plot_neuron(coords, p2p, norm=norm, show_diams=True, width_min=1.5)
+graph.plot_neuron(coords, p2p, norm=norm, show_diams=True, width_min=1.5, cmap=cmap)
 plt.axis('scaled')
 x1, x2 = (-180, -130)
 y1, y2 = (-50, 0)
@@ -109,11 +119,14 @@ plt.ylim((y1, y2))
 plt.xticks([])
 plt.yticks([])
 plt.text(0.05, 0.85, 'a', transform=ax_zoom1.transAxes, weight='bold')
+plt.text(-170, -10, "soma", transform=ax_zoom1.transData,
+         size=8, color='0.9', style='italic')
 
 rec_zoom1 = patches.Rectangle((x1, y1), x2-x1, y2-y1,
                               transform=ax.transData,
                              fill=False,
                              ls='dotted')
+
 fig.patches.append(rec_zoom1)
 
 # zoom axon area
@@ -123,7 +136,7 @@ x1, x2 = (-180, -130)
 y1, y2 = (-165, -115)
 
 plot_contour((x1, x2), (y1, y2), 5)
-graph.plot_neuron(coords, p2p, norm=norm, show_diams=True, width_min=3)
+graph.plot_neuron(coords, p2p, norm=norm, show_diams=True, width_min=3, cmap=cmap)
 plt.axis('scaled')
 plt.xlim((x1, x2))
 plt.ylim((y1, y2))
@@ -135,5 +148,6 @@ rec_zoom2 = patches.Rectangle((x1, y1), x2-x1, y2-y1,
                              fill=False,
                              ls='dotted')
 fig.patches.append(rec_zoom2)
+
 
 plt.savefig('hunter.pdf', facecolor=fig.get_facecolor())
