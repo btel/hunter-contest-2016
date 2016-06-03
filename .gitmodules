@@ -1,0 +1,3 @@
+[submodule "libs/neuroneap"]
+	path = libs/neuroneap
+	url = git@github.com:btel/neuroneap.git
