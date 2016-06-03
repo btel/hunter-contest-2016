@@ -27,7 +27,7 @@ def plot_contour(x_range, y_range, n_contours=15):
     xx, yy = field.calc_grid(x_range, y_range, n_samp=Nsamp)
     vext = field.estimate_on_grid(coords, I, xx, yy)
     vext_p2p = vext.max(0) - vext.min(0)
-    graph.logcontour(xx, yy, vext_p2p, n_contours=n_contours, linecolors='0.8', linewidths=1, unit='nV')
+    graph.logcontour(xx, yy, vext_p2p, n_contours=n_contours, linecolors='0.8', linewidths=1, unit='nV', fontsize=8)
 
 dt = 0.025
 tstop = 50
