@@ -121,6 +121,8 @@ plt.yticks([])
 plt.text(0.05, 0.85, 'a', transform=ax_zoom1.transAxes, weight='bold')
 plt.text(-170, -10, "soma", transform=ax_zoom1.transData,
          size=8, color='0.9', style='italic')
+plt.text(-165, -33, "AIS", transform=ax_zoom1.transData,
+         size=8, color='0.9', style='italic')
 
 rec_zoom1 = patches.Rectangle((x1, y1), x2-x1, y2-y1,
                               transform=ax.transData,
@@ -143,6 +145,10 @@ plt.ylim((y1, y2))
 plt.xticks([])
 plt.yticks([])
 plt.text(0.05, 0.85, 'b', transform=ax_zoom2.transAxes, weight='bold')
+plt.text(-177, -138, "node of\nRanvier", 
+         transform=ax_zoom2.transData,
+         va="top",
+         size=8, color='0.9', style='italic')
 rec_zoom2 = patches.Rectangle((x1, y1), x2-x1, y2-y1,
                               transform=ax.transData,
                              fill=False,
