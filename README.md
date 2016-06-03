@@ -6,7 +6,7 @@ http://scipy2016.scipy.org/ehome/146062/332971/www.enthought.com
 
 Copyright: Bartosz Telenczuk, UNIC, CNRS, 2016
 
-License: Creative Commons CC BY 3.9
+License: Creative Commons [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)
 
 Dependencies:
 
